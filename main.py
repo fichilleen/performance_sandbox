@@ -2,11 +2,12 @@
 
 '''
 Simple tool for getting timing statistics for an external execution.
-Note that this depends on python3.2
+Note that this depends on python3.3
 '''
 
 import argparse
 import shutil
+import sys
 from hashlib import md5
 from subprocess import Popen, DEVNULL
 from time import strftime, perf_counter
@@ -62,7 +63,7 @@ def main ( command, num ):
     command_path = shutil.which ( command [0] )
     if not command_path:
         print ('Command %s not on PATH. Exiting' % command [0] )
-        import sys; sys.exit ( 1 )
+        sys.exit ( 1 )
 
     # Get some broad information for logging the command passed
     cur_time = strftime('%Y-%m-%d_%H:%M:%S')
