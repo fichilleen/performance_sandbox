@@ -39,16 +39,16 @@ def get_hashsum ( command ):
     hash_sum = md5 ( command_bytes )
     return hash_sum.hexdigest()
 
-def run_command ( command, num, hashsum, cur_time ):
+def run_command ( command, num, hashsum, cur_time, suppress_output ):
     results = []
     print ( 'Running: %s' % ' '.join ( command ) )
 
-    if not args.noout:
-        std_out = open ( '%s_%s_%s.stdout' % (command[0], hashsum, cur_time), 'a' )
-        std_err = open ( '%s_%s_%s.stderr' % (command[0], hashsum, cur_time), 'a' )
-    else:
+    if suppress_output:
         std_out = DEVNULL
         std_err = DEVNULL
+    else:
+        std_out = open ( '%s_%s_%s.stdout' % (command[0], hashsum, cur_time), 'a' )
+        std_err = open ( '%s_%s_%s.stderr' % (command[0], hashsum, cur_time), 'a' )
 
     for n in range(num):
         pre_time = perf_counter()
@@ -57,7 +57,7 @@ def run_command ( command, num, hashsum, cur_time ):
         results.append ( post_time - pre_time )
     return results
 
-def main ( command, num ):
+def main ( command, num, suppress_output=True ):
 
     # Verify command is on the path
     command_path = shutil.which ( command [0] )
@@ -69,7 +69,7 @@ def main ( command, num ):
     cur_time = strftime('%Y-%m-%d_%H:%M:%S')
     hashsum = get_hashsum ( command_path )
 
-    results = run_command ( command, num, hashsum, cur_time )
+    results = run_command ( command, num, hashsum, cur_time, suppress_output )
 
     total = sum(results)
     min_time = min(results)
@@ -86,5 +86,5 @@ def main ( command, num ):
 
 if __name__ == '__main__':
     args = parse_arguments()
-    main ( args.command, args.num )
+    main ( args.command, args.num, args.noout )
 
